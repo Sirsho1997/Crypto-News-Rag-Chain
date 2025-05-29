@@ -24,7 +24,12 @@ def fetch_news(cryptos):
         pd.DataFrame: A combined DataFrame containing news articles ('title', 'description', 'published date', 'url', 'publisher',
        'publisher_title', 'ticker')
     """
-    google_news = GNews()
+    google_news = GNews(
+        language='en',
+        period='1d',
+        max_results=10,
+        )
+
     all_news = []
 
     for crypto in cryptos:
@@ -42,6 +47,7 @@ def fetch_news(cryptos):
                     lambda x: x.get('title') if isinstance(x, dict) else None
                 )
                 news_df['ticker'] = crypto
+                news_df.drop(columns=['description'])
                 all_news.append(news_df)
                 print(f"Done downloading news for {crypto} ")
         except Exception as e:
@@ -79,7 +85,6 @@ def build_documents(df):
     """
     Convert a pandas DataFrame containing news into a list of LangChain Document objects.
 
-    Each row embedding --> title + description (separated by newlines)
 
     Metadata is extracted from other columns.
 
@@ -93,13 +98,12 @@ def build_documents(df):
     documents = []
 
     for idx, row in df.iterrows():
-        content = f"{row['title']} \n {row.get('description')}"
+        content = f"{row['title']}"
         metadata = {
             "source": row.get("url"),
             "date": str(row.get("published date")),
             "publisher": row.get("publisher_title"),
             "title": row.get("title"),
-            "description": row.get("description"),
             "ticker": row.get("ticker"),
         }
         documents.append(Document(page_content=content, metadata=metadata))

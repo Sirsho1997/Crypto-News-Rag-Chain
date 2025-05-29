@@ -17,3 +17,5 @@ tiktoken>=0.4.0
 
 # Optional: ensures datetime parsing is fully supported
 python-dateutil>=2.8.2
+
+tavily-python
