@@ -47,7 +47,7 @@ def fetch_news(cryptos):
                     lambda x: x.get('title') if isinstance(x, dict) else None
                 )
                 news_df['ticker'] = crypto
-                news_df.drop(columns=['description'])
+                news_df.drop(columns=['description'], inplace=True)
                 all_news.append(news_df)
                 print(f"Done downloading news for {crypto} ")
         except Exception as e:
